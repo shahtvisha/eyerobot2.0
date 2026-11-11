@@ -102,7 +102,7 @@ Nobody tells it when to look where. So how does it learn?
 
 With a loop the authors bring over from the first EyeRobot.
 
-The selector picks an object, the gaze policy looks at it, and the gripper policy predicts the next arm motion from those views. The closer that prediction is to what the human actually did, the higher the selector's reward.
+The selector picks an object. Both policies share that target and the fixated views: the gaze policy keeps the eyes on the object, and the gripper policy predicts the next chunk of arm motion. The error against the human demonstration is the selector's reward signal: the closer the prediction, the higher the reward.
 
 Compare AutoGaze, which we covered earlier this term: its gaze was trained to reconstruct the video, with no notion of the task. Here, the reward is the task.
 
@@ -132,7 +132,7 @@ Last piece: the gripper policy, and the frame it acts in.
 
 ### Page 26. Architecture
 
-It's an ACT-style transformer. The foveated views, the arm and gaze state, and the target name go in. A one-and-a-half-second motion chunk for both arms comes out.
+It's an ACT-style transformer. A frozen DINOv3 turns each foveated crop into image tokens; those, the arm and gaze state, and the target name go in. A one-and-a-half-second motion chunk for both arms comes out.
 
 Two things to unpack: the views, and the frame.
 
