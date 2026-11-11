@@ -246,7 +246,7 @@ function goToState(index, animate = true, fromRemote = false) {
   document.querySelector('#time').textContent = RAW[current - 1].hidden ? `Hidden state ${current}` : `State ${current} / ${visibleStates.length}`;
   slide.setAttribute('aria-label', `State ${current} of ${states.length}`);
   try { const url = new URL(location.href); url.searchParams.set('state', current); history.replaceState(null, '', url) } catch (e) { }
-  updateThumbnailSelection(); updateNotes(); if (!fromRemote) broadcast();
+  updateThumbnailSelection(); updateNotes(); if (!fromRemote) broadcast(); tellScript();
   const plan = [];
   for (const [id, node] of nodes) {
     const e = to.get(id), a = from.get(id) || null;
@@ -327,6 +327,11 @@ function broadcast() {
   try { if (PRESENTER && window.opener) window.opener.postMessage({ ...msg, from: 'presenter' }, '*') } catch (e) { }
 }
 addEventListener('message', ev => { const d = ev.data; if (!d || d.type !== 'drift-deck') return; if (d.from === 'presenter' && !presenterWin) presenterWin = ev.source; if (d.state !== current) goToState(d.state, true, true) });
+// The spoken-script page (script/index.html or script_vN.html on the same site) follows this deck:
+// every page change is posted on this channel, and the script can ask the deck to show a page.
+let scriptChannel = null; try { scriptChannel = new BroadcastChannel('eyerobot-script') } catch (e) { }
+function tellScript() { try { if (scriptChannel && !PRESENTER) scriptChannel.postMessage({ type: 'deck-state', state: current }) } catch (e) { } }
+if (scriptChannel && !PRESENTER) scriptChannel.onmessage = ev => { const d = ev.data || {}; if (d.type === 'hello') tellScript(); if (d.type === 'goto' && d.state !== current) { pause(); goToState(d.state) } };
 function openPresenter() { const u = new URL(location.href); u.searchParams.set('presenter', ''); u.searchParams.set('state', current); presenterWin = window.open(u.href, 'drift-speaker-view', 'width=1280,height=780') }
 function toggleNotes() { const box = document.querySelector('#notes'); box.hidden = !box.hidden; updateNotes() }
 
