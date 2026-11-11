@@ -128,31 +128,39 @@ So after training, what does it look at?
 
 ### Page 24. Emergent gaze sequences
 
-This is the selector's real output during an autonomous marker run.
+So what does it look like in action? This is the selector's real output during an autonomous marker run.
 
-It looks at the cap first. Just before picking up the marker, it switches to the marker, and keeps its gaze there while capping.
+It first looks at the cap. Just before it picks up the marker, it switches to the marker, and keeps its gaze there while capping.
 
-None of this was labeled. It came out of the reward.
+And the fascinating thing, once again: none of this was labeled. It came straight out of the reward.
 
 ### Page 25. Where we are
 
-Now the robot knows what to look at. The last piece is the one that moves the arms: the gripper policy. What does it see, and how does it act?
+So now we know what to look at, and we have a reliable way to make the eyes fixate on it. The last piece is the gripper policy, the one that moves the arms. What does it see, and how does it act?
 
-### Page 26. Architecture
+### Page 26. Foveated multi-crop input
 
-It's an ACT-style transformer. ACT, Action Chunking with Transformers, predicts a whole chunk of future motion at once instead of one step. A frozen DINOv3 turns each foveated crop into image tokens; those, the arm and gaze state, and the target name go in. A one-and-a-half-second motion chunk for both arms comes out.
+First, what it sees. Let's bring back one of the key ideas: foveation. As Tvisha mentioned, it's like human eyes: we see the center of our vision in much more detail, and get less and less information further out.
 
-Two things to unpack: the views, and the frame.
+So around the fixation point, we cut a pyramid of centered crops, like concentric crops, from wide to tight. Each crop costs the same number of tokens, so the tight crop keeps much more detail where we're looking, and the wide crops keep the context.
 
-### Page 27. Foveated multi-crop input
+This part already exists in the first EyeRobot. So what does the policy do with these crops?
 
-Around the fixation point we cut a pyramid of centered crops, from wide to tight, and each crop costs the same number of tokens. So the detail goes where the eyes point, and the wide crops keep the context. This crop pyramid also comes from the first EyeRobot.
+### Page 27. Architecture
+
+It's an ACT-style transformer. ACT, Action Chunking with Transformers, predicts a whole chunk of future motion at once instead of just one step.
+
+A frozen DINOv3 turns each foveated crop into image tokens. Those, the arm and gaze state, and the target name go in. A one-and-a-half-second motion chunk for both arms comes out.
+
+What's new is the frame those motions are written in.
 
 ### Page 28. The fixation frame
 
-What is new is the frame. Every gripper pose, and every pose the policy predicts, is written in a frame at the virtual center eye, rotated to face the fixation point.
+A frame here just means a coordinate system: an origin and three axes that every position is measured from.
 
-When gaze moves to the grey tape, the frame turns with it, so reaching for the grey tape looks almost the same as reaching for the yellow one. That makes the training data much more centered.
+Every gripper pose, and every pose the policy predicts, is written in a frame at the virtual center eye, rotated to face the fixation point.
+
+So when the gaze moves from the yellow tape to the grey tape, the frame turns with it, and reaching for the grey tape looks almost the same as reaching for the yellow one. So the training data is always centered on what the robot is looking at.
 
 ### Page 29. The frame follows gaze
 
@@ -403,6 +411,8 @@ So where does it still fail?
 ---
 
 ## What changed against the paper check
+
+- v11 (11-11 14:49 run-through): foveation (now page 26) comes before the architecture (now page 27), as Victor asked; pages 24 to 28 in his words; page 28 says what a frame is (a coordinate system).
 
 - v10 (11-11 14:42 run-through): pages 19 to 23 rewritten in Victor's own words from his second take; the keyring case now spoken on page 23; reward wording kept as "smaller error, higher reward" (the paper's reward is the negative Fréchet distance).
 
