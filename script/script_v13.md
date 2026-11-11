@@ -82,7 +82,7 @@ Trained this way, the gaze ends about 3.5 centimeters from the object on average
 
 Change the name to "grey tape", and the gaze jumps over. So the robot can look at anything we name. But who decides what to name, and when? Victor.
 
-## VICTOR, pages 19 to 36
+## VICTOR, pages 19 to 37
 
 ### Page 19. Where we are
 
@@ -168,23 +168,27 @@ It has no reward of its own: it's trained by behavior cloning, to match the huma
 
 Look at the camera images during the pick-tape stage. In the static view, the tape can be anywhere. In the gaze view, it's always in the middle.
 
-So what the policy sees, and the actions it has to output, both become much more consistent. That's why a small amount of demonstration data goes further. Now, the experiments.
+So what the policy sees, and the actions it has to output, both become much more consistent. That's why a small amount of demonstration data goes further.
 
-### Page 31. Setup: robot, camera and seven tasks
+### Page 31. Experiments
+
+Now, the experiments.
+
+### Page 32. Three groups compared
+
+We compare three groups, all trained on the same demonstrations. No gaze sees both stereo images, without fixation. Ego plus wrist sees the left stereo image plus two wrist cameras. And EyeRobot 2.0 sees the stereo pair with active gaze.
+
+Here's the setup they all run on.
+
+### Page 33. Setup: robot, camera and seven tasks
 
 One two-armed robot, and one stereo camera between the arms. No wrist cameras for EyeRobot.
 
 Seven real tasks: marker, tea, toaster, wrench, tape, boba and pot, each tested on the same 25 placements for every policy. Capping the marker and the boba straw need fine precision, and in boba and pot the object in the hand blocks a wrist camera.
 
-What do they compare against?
-
-### Page 32. Three groups compared
-
-Three groups, all trained on the same demonstrations. No gaze sees both stereo images, without fixation. Ego plus wrist sees the left stereo image plus two wrist cameras. And EyeRobot 2.0 sees the stereo pair with active gaze.
-
 Before the results, one slide on how it's trained.
 
-### Page 33. Training and inference pipeline
+### Page 34. Training and inference pipeline
 
 Here's the whole pipeline. From the demonstrations, SAM3 finds each object and FoundationStereo gives depth, so every object gets a position in 3D, measured in real space, not in pixels.
 
@@ -192,7 +196,7 @@ Stage one trains the gaze policy to look at those positions. Stage two freezes i
 
 So how do they do?
 
-### Page 34. Average success (paper Figure 6)
+### Page 35. Average success (paper Figure 6)
 
 Averaged over the seven real tasks: no gaze 27 percent, ego plus wrist 52, EyeRobot 2.0 67. That's about 40 points over the same stereo camera without gaze.
 
@@ -200,43 +204,43 @@ But the paper's own claim against wrist cameras is careful. Where the wrist came
 
 Two stories behind that. First, precision.
 
-### Page 35. Precision tasks
+### Page 36. Precision tasks
 
 Capping the marker and putting the straw in the cup need very fine alignment. Passive stereo gets 4 and 8 percent: same pixels, but it can't afford to look closely. Foveating on the cap and the straw lifts those to 68 and 44.
 
 Second story: occlusion.
 
-### Page 36. Wrist occlusion (paper Figure 7)
+### Page 37. Wrist occlusion (paper Figure 7)
 
 In boba and pot, the cup or the lid ends up right in front of the wrist cameras at the critical moment. Ego plus wrist falls to 12 and 32 percent. EyeRobot keeps 44 and 52, because its eyes aren't on the gripper.
 
 So which parts are doing the work? Tvisha will take the ablations.
 
-## TVISHA, pages 37 to 40
+## TVISHA, pages 38 to 41
 
-### Page 37. Real-world ablations (paper Table 2)
+### Page 38. Real-world ablations (paper Table 2)
 
 The ablations ask which parts do the work. One caution first: every real number is one trained model, picked at random, over 25 trials, with objects inside the area the demos covered. Gaps of a few points are noise.
 
 The big gaps are clear, though. Without foveation, the average drops from 66.5 to 46.5 percent. Without stereo, to 48.5. On the marker, 17 out of 25 becomes 8 without stereo and 5 without foveation.
 
-### Page 38. Simulated ablations (paper Table 5)
+### Page 39. Simulated ablations (paper Table 5)
 
 In simulation they test the rest. Write the actions in world coordinates instead of the gaze frame, and success falls from 0.74 to 0.53. So looking isn't enough; you have to act in the gaze frame.
 
 So where does it still fail?
 
-### Page 39. Typical failures
+### Page 40. Typical failures
 
 Failures cluster at the hardest, most precise stages: inserting the straw, capping the marker. And with clutter, it mostly fails when it's looking at the wrong thing.
 
-### Page 40. Open problems
+### Page 41. Open problems
 
 The authors name three open problems: every policy is trained for one task, the eyes can only look within the fixed camera's view, and gaze targets whole objects, not parts. It also runs at half the baselines' control rate.
 
-## BOTH, page 41 (discussion)
+## BOTH, page 42 (discussion)
 
-### Page 41. Discussion
+### Page 42. Discussion
 
 To wrap up: compared to the first EyeRobot, three things are new: two eyes from one fixed stereo camera, gaze split into a selector and a gaze policy, and actions in the gaze frame. That takes passive stereo from 27 to 67 percent.
 
@@ -248,17 +252,17 @@ Two: AutoGaze, which we covered earlier this term, chose where to look by recons
 
 Three: DreamZero, earlier today, gets zero-shot policies from a large pretrained model. EyeRobot trains a small policy per task. Does active gaze matter more, or less, once policies are large?
 
-## APPENDIX, pages 43 to 60 (backup for questions, not presented; page 42 is the divider)
+## APPENDIX, pages 44 to 61 (backup for questions, not presented; page 43 is the divider)
 
-### Page 43. Poses in the world frame
+### Page 44. Poses in the world frame
 
 *Skipped: our own plot used the old frame. Page 33 makes the point with the camera images instead.*
 
-### Page 44. Poses in the fixation frame
+### Page 45. Poses in the fixation frame
 
 *Skipped, with page 30.*
 
-### Page 45. Three demos compared
+### Page 46. Three demos compared
 
 Side by side, same scale, three demonstrations drawn bold.
 
@@ -266,13 +270,13 @@ On the left, robot coordinates: they start and end in unrelated places. On the r
 
 That's the compression the policy benefits from. And the same thing happens on the input side.
 
-### Page 46. Part 2 plan
+### Page 47. Part 2 plan
 
 Here's the second half. First, how they test it. Then how training and inference run in practice. Then results against passive stereo and wrist cameras, what each piece contributes, and where it still fails.
 
 Let's start with the robot.
 
-### Page 47. Seven real tasks
+### Page 48. Seven real tasks
 
 Seven real tasks, each chosen to stress something different.
 
@@ -282,7 +286,7 @@ The clips you see are EyeRobot 2.0 running on its own.
 
 How do they make the comparison fair?
 
-### Page 48. Evaluation protocol
+### Page 49. Evaluation protocol
 
 They're careful here.
 
@@ -294,7 +298,7 @@ That's over a thousand physical rollouts in total. And the gaze always gets one 
 
 So who is EyeRobot up against?
 
-### Page 49. Stage 1: gaze pretraining
+### Page 50. Stage 1: gaze pretraining
 
 Stage one. Each rollout is 120 steps on one paused stereo frame, with a random object name.
 
@@ -304,7 +308,7 @@ Stage one. Each rollout is 120 steps on one paused stereo frame, with a random o
 
 Stage two is more involved.
 
-### Page 50. Stage 2: episode anatomy
+### Page 51. Stage 2: episode anatomy
 
 One episode at a time.
 
@@ -316,7 +320,7 @@ Every 15 frames, the selector picks a new target. The colors show one example se
 
 How do the two learners share data?
 
-### Page 51. Stage 2: the ring buffer
+### Page 52. Stage 2: the ring buffer
 
 Through a buffer that keeps the last 100 episodes.
 
@@ -326,7 +330,7 @@ The gripper policy has its own heads, so no reinforcement learning gradient touc
 
 So that's training. What does it look like on the robot?
 
-### Page 52. Real-time inference
+### Page 53. Real-time inference
 
 At test time it's one loop.
 
@@ -338,7 +342,7 @@ The whole thing runs at about 20 hertz. That's half the rate of the simpler base
 
 One detail on that smoothing.
 
-### Page 53. Temporal ensembling
+### Page 54. Temporal ensembling
 
 A new chunk comes out every cycle. So at any moment, several chunks overlap the current time.
 
@@ -348,7 +352,7 @@ The point is smooth motion that still takes in the newest prediction.
 
 Okay. Results.
 
-### Page 54. Task progression
+### Page 55. Task progression
 
 One detail from the stage-by-stage breakdowns.
 
@@ -356,7 +360,7 @@ You'd expect passive stereo to fail only at the precise steps. But it often fail
 
 Let's go task by task.
 
-### Page 55. Per-task success
+### Page 56. Per-task success
 
 On the left are the tasks where the wrist cameras keep a clear view: marker, tea, toaster and wrench. Here EyeRobot and ego plus wrist perform about the same, and both are far above passive stereo.
 
@@ -364,7 +368,7 @@ On the right are boba and pot, where the object in the hand blocks the wrist cam
 
 Two stories stand out. First, precision.
 
-### Page 56. Distractors: first grasp
+### Page 57. Distractors: first grasp
 
 They tested tea, wrench and tape with colorful extra objects scattered around. Each dot is one of 25 trials, and filled dots are successful first grasps.
 
@@ -374,7 +378,7 @@ In the video, the wrist policy on the left reaches for a distractor and can't re
 
 And the whole task?
 
-### Page 57. Distractors: full task
+### Page 58. Distractors: full task
 
 With clutter, full-task success is low for everyone: 0, 11 and 23 percent. Watch the dots drain from the first-grasp state.
 
@@ -382,7 +386,7 @@ The interesting part is how EyeRobot fails. When its gaze is on the right object
 
 Now simulation.
 
-### Page 58. Simulation results
+### Page 59. Simulation results
 
 Six pick-and-place tasks, 100 unseen setups each.
 
@@ -392,7 +396,7 @@ The authors suggest simulation may favor wrist cameras, partly because physics i
 
 So which parts of the method are doing the work?
 
-### Page 59. Action frame per task
+### Page 60. Action frame per task
 
 Task by task, the gaze frame wins every time.
 
@@ -402,13 +406,15 @@ This is the data argument from earlier, showing up in the numbers. With fixed wo
 
 So where does it still fail?
 
-### Page 60. Conclusion: the architecture
+### Page 61. Conclusion: the architecture
 
 *Skipped on 11-10 with Tvisha: the architecture is already on the overview pages. The wrap-up line moved to page 59.*
 
 ---
 
 ## What changed against the paper check
+
+- v13 (11-11 14:59 run-through): an "Experiments" divider is page 31; the three groups (now 32) come before the setup (now 33); every later page number is one higher.
 
 - v12 (11-11 14:55 run-through): the architecture moves after the frame (now page 29), as Victor ran it; page 29 says the gripper policy has no reward, it is trained by behavior cloning (paper p5: "Action chunks are supervised with teleop demos").
 
