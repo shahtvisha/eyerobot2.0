@@ -88,29 +88,31 @@ Change the name to "grey tape", and the gaze jumps over. So the robot can look a
 
 Thanks, Tvisha.
 
-So we can look at any object we name. What's missing is choosing which one, and when. That's the target selector.
+So the gaze policy can now look at any object we name, and from here on it is frozen. Two pieces are left: the target selector and the gripper policy. First, the target selector: it decides which object to look at, and when, so the gripper policy can act.
 
 ### Page 20. What the selector outputs
 
-The selector is deliberately tiny: a small network that only sees the robot's own state, where the arms and grippers are.
+Start with its inputs and outputs. The selector is deliberately tiny, a three-layer MLP.
 
-It picks one object from the task's list, and that name goes to the gaze policy, which is now frozen. During training it picks a new target every 15 frames, so the gaze has time to settle.
+Its input is only the robot's own state: where the arms and grippers are. It never sees an image.
+
+Its output is a probability for each object on the task's list; here, the marker. That name is the prompt for the frozen gaze policy.
 
 Nobody tells it when to look where. So how does it learn?
 
 ### Page 21. The BC-RL loop
 
-With a loop the authors bring over from the first EyeRobot.
+With a loop the authors bring over from the first EyeRobot, called BC-RL: behavior cloning plus reinforcement learning.
 
-The selector picks an object. Both policies share that target and the fixated views: the gaze policy keeps the eyes on the object, and the gripper policy predicts the next chunk of arm motion. The error against the human demonstration is the selector's reward signal: the closer the prediction, the higher the reward.
+The selector first picks an object. Both policies share that target and the fixated views: the gaze policy keeps the eyes on the object, and the gripper policy, trained by behavior cloning, predicts the next chunk of arm motion.
 
-Compare AutoGaze, which we covered earlier this term: its gaze was trained to reconstruct the video, with no notion of the task. Here, the reward is the task.
+The reward is how close that predicted chunk is to what the human actually did in the demonstration. That closeness is the target selector's reinforcement learning reward.
 
 ### Page 22. The reward on one chunk
 
 Here's one reward. Blue is the chunk of motion the human did; orange is what the gripper policy predicted.
 
-The reward measures the gap between those two paths, a Fréchet distance, which compares their shapes, not their speed. The smaller the gap, the higher the reward.
+The gap between the two paths is a Fréchet distance. Comparing shapes means: walk along both paths from start to end, each at its own pace and never backwards, paced to stay as close as possible. The largest gap you can't avoid is the distance. So a prediction on the right route, a little early or late, still scores well; one heading somewhere else does not. The smaller the gap, the higher the reward.
 
 If the selector looks at the wrong thing, say the keyring, the prediction drifts, the gap grows, and the reward drops. So after training, what does it look at?
 
@@ -128,11 +130,11 @@ None of this was labeled. It came out of the reward.
 
 ### Page 25. Where we are
 
-Last piece: the gripper policy, and the frame it acts in.
+Now the robot knows what to look at. The last piece is the one that moves the arms: the gripper policy. What does it see, and how does it act?
 
 ### Page 26. Architecture
 
-It's an ACT-style transformer. A frozen DINOv3 turns each foveated crop into image tokens; those, the arm and gaze state, and the target name go in. A one-and-a-half-second motion chunk for both arms comes out.
+It's an ACT-style transformer. ACT, Action Chunking with Transformers, predicts a whole chunk of future motion at once instead of one step. A frozen DINOv3 turns each foveated crop into image tokens; those, the arm and gaze state, and the target name go in. A one-and-a-half-second motion chunk for both arms comes out.
 
 Two things to unpack: the views, and the frame.
 
