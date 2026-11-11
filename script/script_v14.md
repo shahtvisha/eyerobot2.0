@@ -170,29 +170,27 @@ Look at the camera images during the pick-tape stage. In the static view, the ta
 
 So what the policy sees, and the actions it has to output, both become much more consistent. That's why a small amount of demonstration data goes further.
 
-### Page 31. Experiments
+### Page 31. Training and inference pipeline
+
+So here's the whole pipeline, next to the architecture. We start from the teleop demos: SAM3 finds each object and FoundationStereo gives depth, so every object gets a position in 3D, measured in real space, not in pixels.
+
+Stage one trains the gaze policy to look at those positions. Stage two freezes it and trains the selector and the gripper policy together. Then all three run live, at about 20 hertz, with no human gaze labels anywhere.
+
+### Page 32. Experiments
 
 Now, the experiments.
 
-### Page 32. Three groups compared
+### Page 33. Three groups compared
 
 We compare three groups, all trained on the same demonstrations. No gaze sees both stereo images, without fixation. Ego plus wrist sees the left stereo image plus two wrist cameras. And EyeRobot 2.0 sees the stereo pair with active gaze.
 
 Here's the setup they all run on.
 
-### Page 33. Setup: robot, camera and seven tasks
+### Page 34. Setup: robot, camera and seven tasks
 
 One two-armed robot, and one stereo camera between the arms. No wrist cameras for EyeRobot.
 
 Seven real tasks: marker, tea, toaster, wrench, tape, boba and pot, each tested on the same 25 placements for every policy. Capping the marker and the boba straw need fine precision, and in boba and pot the object in the hand blocks a wrist camera.
-
-Before the results, one slide on how it's trained.
-
-### Page 34. Training and inference pipeline
-
-Here's the whole pipeline. From the demonstrations, SAM3 finds each object and FoundationStereo gives depth, so every object gets a position in 3D, measured in real space, not in pixels.
-
-Stage one trains the gaze policy to look at those positions. Stage two freezes it and trains the selector and the gripper policy together. Then all three run live, at about 20 hertz, with no human gaze labels anywhere.
 
 So how do they do?
 
@@ -413,6 +411,8 @@ So where does it still fail?
 ---
 
 ## What changed against the paper check
+
+- v14 (11-11 15:02 run-through): the pipeline moves before the experiments (now page 31), redrawn vertical beside the architecture with only the box names and one line: no human gaze labels anywhere.
 
 - v13 (11-11 14:59 run-through): an "Experiments" divider is page 31; the three groups (now 32) come before the setup (now 33); every later page number is one higher.
 
