@@ -88,37 +88,43 @@ Change the name to "grey tape", and the gaze jumps over. So the robot can look a
 
 Thanks, Tvisha.
 
-So the gaze policy can now look at any object we name, and from here on it is frozen. Two pieces are left: the target selector and the gripper policy. First, the target selector: it decides which object to look at, and when, so the gripper policy can act.
+So now the gaze policy is frozen. We have a reliable way to fixate on any object we want. But the remaining question is: where do we look?
+
+That takes us to the target selector: how do we decide what to look at, and when?
 
 ### Page 20. What the selector outputs
 
-Start with its inputs and outputs. The selector is deliberately tiny, a three-layer MLP.
+Here's the target selector. It's purposely small and lightweight: only a three-layer MLP.
 
-Its input is only the robot's own state: where the arms and grippers are. It never sees an image.
+Its input has no image. It only gets the robot's current state: where the arms are, and the gripper state.
 
-Its output is a probability for each object on the task's list; here, the marker. That name is the prompt for the frozen gaze policy.
+Its output is a probability over a predefined list of objects for the task: which one should we be looking at right now? In this example it's the marker, and that name goes to the frozen gaze policy.
 
-Nobody tells it when to look where. So how does it learn?
+But the fascinating part is how it's trained: there are no gaze demonstrations. Nobody tells it what to look at, at which moment. So how does it learn what to look at, and when?
 
 ### Page 21. The BC-RL loop
 
-With a loop the authors bring over from the first EyeRobot, called BC-RL: behavior cloning plus reinforcement learning.
+That brings us to the training loop the authors introduced in the first EyeRobot, called BC-RL: behavior cloning plus reinforcement learning. What does that mean?
 
-The selector first picks an object. Both policies share that target and the fixated views: the gaze policy keeps the eyes on the object, and the gripper policy, trained by behavior cloning, predicts the next chunk of arm motion.
+The target selector is the first step: it picks an object, say the yellow tape. Both policies share that target: the gaze policy fixates on it, and the gripper policy, trained by behavior cloning, predicts the next chunk of arm motion.
 
-The reward is how close that predicted chunk is to what the human actually did in the demonstration. That closeness is the target selector's reinforcement learning reward.
+Then we compare that predicted chunk against the human demonstration and measure the error between them. The smaller that error, the higher the target selector's RL reward.
 
 ### Page 22. The reward on one chunk
 
-Here's one reward. Blue is the chunk of motion the human did; orange is what the gripper policy predicted.
+So how is the error calculated? Here's one reward, on the marker task: pick up the cap and the marker, cap it, put it in the bag, and zip the bag.
 
-The gap between the two paths is a Fréchet distance. Comparing shapes means: walk along both paths from start to end, each at its own pace and never backwards, paced to stay as close as possible. The largest gap you can't avoid is the distance. So a prediction on the right route, a little early or late, still scores well; one heading somewhere else does not. The smaller the gap, the higher the reward.
+Blue is the teleop chunk, what the human actually did. Orange is what the gripper policy predicted.
 
-If the selector looks at the wrong thing, say the keyring, the prediction drifts, the gap grows, and the reward drops. So after training, what does it look at?
+The gap between the two paths is the Fréchet distance, and it compares shapes, not speed. If the prediction gets there a bit early or a bit late, it doesn't matter. What matters is that the path matches the human's.
+
+Here the selector looks at the marker, which is what it should look at, so the gap is small and the reward is high.
 
 ### Page 23. A worse fixation, a lower reward
 
-*Animation continues from page 22: the worse fixation and the bigger gap. No new words.*
+But if at this moment it picks the keyring instead, the prediction drifts, the gap widens, and the reward drops.
+
+So after training, what does it look at?
 
 ### Page 24. Emergent gaze sequences
 
@@ -397,6 +403,8 @@ So where does it still fail?
 ---
 
 ## What changed against the paper check
+
+- v10 (11-11 14:42 run-through): pages 19 to 23 rewritten in Victor's own words from his second take; the keyring case now spoken on page 23; reward wording kept as "smaller error, higher reward" (the paper's reward is the negative Fréchet distance).
 
 - (Tvisha) Page 3: "adding two wrist cameras to stereo" fixed. The Ego + Wrist baseline is one front image plus two wrist cameras (paper p7, Baselines).
 - (Tvisha) Page 2: the token count is said as our own count ("by our own count").
