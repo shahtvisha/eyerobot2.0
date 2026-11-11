@@ -156,19 +156,19 @@ Every gripper pose, and every pose the policy predicts, is written in a frame at
 
 So when the gaze moves from the yellow tape to the grey tape, the frame turns with it, and reaching for the grey tape looks almost the same as reaching for the yellow one. So the training data is always centered on what the robot is looking at.
 
-### Page 29. Architecture
+### Page 29. Compact image inputs
+
+Look at the camera images during the pick-tape stage. In the static view, the tape can be anywhere. In the gaze view, it's always in the middle.
+
+So what the policy sees, and the actions it has to output, both become much more consistent. That's why a small amount of demonstration data goes further.
+
+### Page 30. Architecture
 
 Now that we understand both the foveated view and the fixation frame, let's look at the gripper policy itself. It's an ACT-style transformer. ACT, Action Chunking with Transformers, predicts a whole chunk of future motion at once instead of one step.
 
 A frozen DINOv3 turns each foveated crop into image tokens. Those, the arm and gaze state, and the target name go in. A one-and-a-half-second motion chunk for both arms comes out.
 
 It has no reward of its own: it's trained by behavior cloning, to match the human's motion in the demonstrations.
-
-### Page 30. Compact image inputs
-
-Look at the camera images during the pick-tape stage. In the static view, the tape can be anywhere. In the gaze view, it's always in the middle.
-
-So what the policy sees, and the actions it has to output, both become much more consistent. That's why a small amount of demonstration data goes further.
 
 ### Page 31. Training and inference pipeline
 
@@ -411,6 +411,8 @@ So where does it still fail?
 ---
 
 ## What changed against the paper check
+
+- v15 (11-11 15:22): compact image inputs (now 29) before the architecture (now 30).
 
 - v14 (11-11 15:02 run-through): the pipeline moves before the experiments (now page 31), redrawn vertical beside the architecture with only the box names and one line: no human gaze labels anywhere.
 
