@@ -144,27 +144,25 @@ First, what it sees. Let's bring back one of the key ideas: foveation. As Tvisha
 
 So around the fixation point, we cut a pyramid of centered crops, like concentric crops, from wide to tight. Each crop costs the same number of tokens, so the tight crop keeps much more detail where we're looking, and the wide crops keep the context.
 
-This part already exists in the first EyeRobot. So what does the policy do with these crops?
+This part already exists in the first EyeRobot. What's new is the frame.
 
-### Page 27. Architecture
-
-It's an ACT-style transformer. ACT, Action Chunking with Transformers, predicts a whole chunk of future motion at once instead of just one step.
-
-A frozen DINOv3 turns each foveated crop into image tokens. Those, the arm and gaze state, and the target name go in. A one-and-a-half-second motion chunk for both arms comes out.
-
-What's new is the frame those motions are written in.
-
-### Page 28. The fixation frame
+### Page 27. The fixation frame
 
 A frame here just means a coordinate system: an origin and three axes that every position is measured from.
 
 Every gripper pose, and every pose the policy predicts, is written in a frame at the virtual center eye, rotated to face the fixation point.
 
+### Page 28. The frame follows gaze
+
 So when the gaze moves from the yellow tape to the grey tape, the frame turns with it, and reaching for the grey tape looks almost the same as reaching for the yellow one. So the training data is always centered on what the robot is looking at.
 
-### Page 29. The frame follows gaze
+### Page 29. Architecture
 
-*Animation continues from page 28: gaze moves to the grey tape and the frame turns with it. No new words.*
+Now that we understand both the foveated view and the fixation frame, let's look at the gripper policy itself. It's an ACT-style transformer. ACT, Action Chunking with Transformers, predicts a whole chunk of future motion at once instead of one step.
+
+A frozen DINOv3 turns each foveated crop into image tokens. Those, the arm and gaze state, and the target name go in. A one-and-a-half-second motion chunk for both arms comes out.
+
+It has no reward of its own: it's trained by behavior cloning, to match the human's motion in the demonstrations.
 
 ### Page 30. Compact image inputs
 
@@ -411,6 +409,8 @@ So where does it still fail?
 ---
 
 ## What changed against the paper check
+
+- v12 (11-11 14:55 run-through): the architecture moves after the frame (now page 29), as Victor ran it; page 29 says the gripper policy has no reward, it is trained by behavior cloning (paper p5: "Action chunks are supervised with teleop demos").
 
 - v11 (11-11 14:49 run-through): foveation (now page 26) comes before the architecture (now page 27), as Victor asked; pages 24 to 28 in his words; page 28 says what a frame is (a coordinate system).
 
