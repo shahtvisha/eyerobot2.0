@@ -106,7 +106,7 @@ But the fascinating part is how it's trained: there are no gaze demonstrations. 
 
 That brings us to the training loop the authors introduced in the first EyeRobot, called BC-RL: behavior cloning plus reinforcement learning. What does that mean?
 
-The target selector is the first step: it picks an object, say the yellow tape. Both policies share that target: the gaze policy fixates on it, and the gripper policy, trained by behavior cloning, predicts the next chunk of arm motion.
+The target selector is the first step: it picks an object, say the marker. Both policies share that target: the gaze policy fixates on it, and the gripper policy, trained by behavior cloning, predicts the next chunk of arm motion.
 
 Then we compare that predicted chunk against the human demonstration and measure the error between them. The smaller that error, the higher the target selector's RL reward.
 
@@ -411,6 +411,8 @@ So where does it still fail?
 ---
 
 ## What changed against the paper check
+
+- v16 (11-11 15:4x): slide 21 diagram says "marker" (with marker icons) instead of "yellow tape"; page 21 words match.
 
 - v15 (11-11 15:22): compact image inputs (now 29) before the architecture (now 30).
 

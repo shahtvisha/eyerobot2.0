@@ -22,14 +22,14 @@ text { font-family: 'Avenir Next', Avenir, sans-serif; text-anchor: middle; fill
 <!-- Simplified YAM: motor housing, slide rail, and tapered open-frame parallel jaws. -->
 <g id="gripper" fill="currentColor" stroke="none"><path d="M-5-16H5Q7-16 7-14V-2H-7V-14Q-7-16-5-16Z" /><path d="M-12-2H12V2H-12Z M-12 2H-5V21H-8Z M-9 5L-7 15V5Z M12 2H5V21H8Z M9 5L7 15V5Z" fill-rule="evenodd" /></g>
 <g id="chunk"><use href="#gripper" transform="translate(8 0) scale(.6) rotate(-16)" opacity=".45" /><use href="#gripper" transform="translate(30 4) scale(.6) rotate(-8)" opacity=".7" /><use href="#gripper" transform="translate(52 8) scale(.6)" /></g>
-<g id="view"><rect x="0" y="0" width="42" height="42" rx="5" fill="#e8eeea" /><ellipse cx="21" cy="22" rx="10" ry="8" fill="#d5c48f" /><ellipse cx="21" cy="22" rx="5" ry="4" fill="#fff" /></g>
+<g id="view"><rect x="0" y="0" width="42" height="42" rx="5" fill="#e8eeea" /><g transform="rotate(-25 21 21)"><rect x="7" y="17.5" width="21" height="7" rx="2" fill="#c9ced6" /><rect x="27" y="17.5" width="8" height="7" rx="2" fill="#3b5bd6" /><rect x="5" y="19" width="3" height="4" rx="1" fill="#3b5bd6" /></g></g>
 </defs>
 
 <rect x="210" y="115" width="205" height="280" rx="12" fill="#fcfcfb" stroke="#e0e5e2" />
 <text x="312" y="100" class="label">Shared inputs</text>
 <text x="312" y="154" class="small">selected target</text>
 <rect x="232" y="166" width="161" height="47" rx="7" fill="#fcf7f2" stroke="#e2cdbd" />
-<text x="312" y="195" class="label">“yellow tape”</text>
+<text x="312" y="195" class="label">“marker”</text>
 <use href="#view" transform="translate(256 253) scale(1.2)" />
 <use href="#view" transform="translate(319 253) scale(1.2)" />
 <text x="312" y="338" class="label">Fixated views</text>
