@@ -286,9 +286,26 @@ let lastState = null;
 function fit() { const box = document.querySelector('#viewport').getBoundingClientRect(); slide.style.transform = `scale(${Math.min(box.width / W, box.height / H)})` }
 function pause() { playing = false; clearTimeout(playTimer); document.querySelector('#play').textContent = 'Play' }
 function holdFor(i) { return (RAW[i - 1].holdSeconds || 4) * 1000 }
-function advance() { if (!playing) return; const next = nextVisible(1); if (next === undefined) { pause(); return } goToState(next); playTimer = setTimeout(advance, holdFor(current)) }
+function advance() { if (!playing) return; const next = nextVisible(1); if (next === undefined) { pause(); return } if (RAW[next - 1].skip) { skipRun(next, () => { playTimer = setTimeout(advance, holdFor(current)) }); return } goToState(next); playTimer = setTimeout(advance, holdFor(current)) }
 function play() { if (playing) { pause(); return } if (nextVisible(1) === undefined) goToState(visibleStates[0], false); playing = true; document.querySelector('#play').textContent = 'Pause'; playTimer = setTimeout(advance, holdFor(current)); showControls() }
-function step(dir) { pause(); const next = nextVisible(dir); if (next !== undefined) goToState(next); showControls() }
+// Pages marked skip: true flash blurred under a red X, then the deck moves on (forward); going back jumps over them.
+const SKIP_MS = 480; let skipping = false;
+function skipRun(n, then) {
+  skipping = true; goToState(n, false); slide.classList.add('skipping');
+  setTimeout(() => {
+    const after = visibleStates.find(k => k > n);
+    if (after !== undefined && RAW[after - 1].skip) return skipRun(after, then);
+    slide.classList.remove('skipping'); skipping = false; if (after !== undefined) goToState(after); if (then) then();
+  }, SKIP_MS);
+}
+function step(dir) {
+  pause(); if (skipping) return; let next = nextVisible(dir);
+  if (next !== undefined && RAW[next - 1].skip) {
+    if (dir > 0) skipRun(next);
+    else { while (next !== undefined && RAW[next - 1].skip) next = visibleStates.findLast(k => k < next); if (next !== undefined) goToState(next) }
+  } else if (next !== undefined) goToState(next);
+  showControls()
+}
 function showControls() { document.body.classList.remove('controls-hidden'); clearTimeout(hideTimer); hideTimer = setTimeout(() => { if (!document.querySelector('#controls').matches(':hover') && document.querySelector('#helptext').hidden) document.body.classList.add('controls-hidden') }, 2200) }
 async function fullscreen() { try { if (document.fullscreenElement) await document.exitFullscreen(); else await document.documentElement.requestFullscreen() } catch (e) { console.info('Use the browser fullscreen menu.', e) } }
 

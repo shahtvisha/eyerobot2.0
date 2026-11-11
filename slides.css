@@ -46,3 +46,8 @@ button{background:transparent;border:0;color:inherit;cursor:pointer;font:inherit
 .presenter #pv-notes{flex:1;overflow:auto;font:21px/1.55 -apple-system,system-ui,sans-serif;color:#f6f6f8;white-space:pre-wrap}
 .presenter #sidebar-toggle,.presenter #sidebar{display:none}
 @media print{body{background:white}#controls,#helptext,#notes,#sidebar,#sidebar-toggle{display:none}.sidebar-open #viewport{left:0}}
+
+/* skipped pages: blurred with a red X for a moment */
+#slide.skipping>.element{filter:blur(7px);opacity:.5}
+#slide.skipping::before,#slide.skipping::after{content:'';position:absolute;left:50%;top:50%;width:460px;height:18px;margin:-9px 0 0 -230px;background:#d62828;border-radius:9px;z-index:1000;transform:rotate(32deg)}
+#slide.skipping::after{transform:rotate(-32deg)}
